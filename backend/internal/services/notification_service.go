@@ -52,3 +52,7 @@ func (s *NotificationService) MarkAsRead(id uuid.UUID) error {
 func (s *NotificationService) MarkAllAsRead(userID uuid.UUID) error {
 	return s.repo.MarkAllAsRead(userID)
 }
+
+func (s *NotificationService) DeleteNotification(id uuid.UUID) error {
+	return s.repo.Delete(id)
+}

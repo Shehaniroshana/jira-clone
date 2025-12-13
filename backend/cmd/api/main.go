@@ -220,6 +220,7 @@ func main() {
 	notifications.Get("/", notificationHandler.GetMyNotifications)
 	notifications.Put("/read-all", notificationHandler.MarkAllAsRead)
 	notifications.Put("/:id/read", notificationHandler.MarkAsRead)
+	notifications.Delete("/:id", notificationHandler.DeleteNotification)
 
 	// Report routes
 	reports := protected.Group("/reports")

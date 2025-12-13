@@ -162,7 +162,7 @@ export default function IssueDetailModal({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -382,8 +382,8 @@ export default function IssueDetailModal({
                                                     handleUpdate("priority", priority);
                                                 }}
                                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${editValues.priority === priority
-                                                        ? "bg-cyan-500/20 text-cyan-400 ring-2 ring-cyan-500"
-                                                        : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                                                    ? "bg-cyan-500/20 text-cyan-400 ring-2 ring-cyan-500"
+                                                    : "bg-slate-800 text-slate-400 hover:bg-slate-700"
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-2">

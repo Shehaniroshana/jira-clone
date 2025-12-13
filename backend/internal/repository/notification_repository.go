@@ -44,3 +44,7 @@ func (r *NotificationRepository) MarkAllAsRead(userID uuid.UUID) error {
 		Where("user_id = ? AND is_read = ?", userID, false).
 		Update("is_read", true).Error
 }
+
+func (r *NotificationRepository) Delete(id uuid.UUID) error {
+	return r.db.Delete(&models.Notification{}, id).Error
+}

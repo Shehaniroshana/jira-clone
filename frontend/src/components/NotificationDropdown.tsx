@@ -130,10 +130,10 @@ export default function NotificationDropdown() {
 
                         {/* Dropdown Panel */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            className="absolute right-0 top-full mt-2 w-96 glass-card rounded-2xl shadow-2xl border border-slate-700/50 z-50 overflow-hidden"
+                            initial={{ opacity: 0, scale: 0.95, x: -10 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, x: -10 }}
+                            className="absolute left-full bottom-0 ml-4 w-96 bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 z-[100] overflow-hidden origin-bottom-left"
                         >
                             {/* Header */}
                             <div className="p-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-900/50">

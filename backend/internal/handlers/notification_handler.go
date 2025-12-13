@@ -48,3 +48,17 @@ func (h *NotificationHandler) MarkAllAsRead(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "All notifications marked as read"})
 }
+
+func (h *NotificationHandler) DeleteNotification(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid notification ID"})
+	}
+
+	if err := h.service.DeleteNotification(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete notification"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Notification deleted successfully"})
+}

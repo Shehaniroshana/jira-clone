@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useIssueStore } from '@/store/issueStore'
 import { useProjectStore } from '@/store/projectStore'
+import { useSprintStore } from '@/store/sprintStore'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   Plus, ArrowLeft, Filter, Settings,
-  CheckCircle2, Circle, AlertCircle, Bug, BookOpen, Layers
+  CheckCircle2, Circle, AlertCircle, Bug, BookOpen, Layers,
+  Rocket
 } from 'lucide-react'
 import { getInitials, cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
@@ -43,6 +45,7 @@ export default function BoardPage() {
   const navigate = useNavigate()
   const { issues, fetchIssues, updateIssue } = useIssueStore()
   const { currentProject, fetchProject } = useProjectStore()
+  const { sprints, fetchSprints } = useSprintStore()
   const { toast } = useToast()
 
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
@@ -52,18 +55,25 @@ export default function BoardPage() {
     if (projectId) {
       Promise.all([
         fetchProject(projectId),
-        fetchIssues(projectId)
+        fetchIssues(projectId),
+        fetchSprints(projectId)
       ]).finally(() => setIsLoading(false))
     }
-  }, [projectId, fetchProject, fetchIssues])
+  }, [projectId, fetchProject, fetchIssues, fetchSprints])
 
+  const activeSprint = sprints.find(s => s.status === 'active')
   const boardIssues = (issues[projectId || ''] || []) as Issue[]
 
+  // Filter issues for the active sprint
+  const sprintIssues = activeSprint
+    ? boardIssues.filter(i => i.sprintId === activeSprint.id)
+    : []
+
   const columns = {
-    todo: boardIssues.filter(i => i.status === 'todo' && i.type !== 'subtask'),
-    in_progress: boardIssues.filter(i => i.status === 'in_progress' && i.type !== 'subtask'),
-    in_review: boardIssues.filter(i => i.status === 'in_review' && i.type !== 'subtask'),
-    done: boardIssues.filter(i => i.status === 'done' && i.type !== 'subtask'),
+    todo: sprintIssues.filter(i => i.status === 'todo' && i.type !== 'subtask'),
+    in_progress: sprintIssues.filter(i => i.status === 'in_progress' && i.type !== 'subtask'),
+    in_review: sprintIssues.filter(i => i.status === 'in_review' && i.type !== 'subtask'),
+    done: sprintIssues.filter(i => i.status === 'done' && i.type !== 'subtask'),
   }
 
   const handleDragEnd = async (result: DropResult) => {
@@ -113,6 +123,42 @@ export default function BoardPage() {
     )
   }
 
+  if (!activeSprint) {
+    return (
+      <div className="space-y-6 animate-fade-in p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Board</h1>
+              <p className="text-sm text-slate-400 mt-1">{currentProject?.name}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Empty State */}
+        <div className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-2xl border-dashed border-2 border-slate-700">
+          <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
+            <Rocket className="w-10 h-10 text-slate-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">No Active Sprint</h2>
+          <p className="text-slate-400 max-w-md mb-8">
+            There is no active sprint in this project. Go to the Backlog to create and start a sprint.
+          </p>
+          <Button
+            onClick={() => navigate(`/projects/${projectId}/backlog`)}
+            className="btn-neon"
+          >
+            Go to Backlog
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 animate-fade-in p-6">
       {/* Header */}
@@ -122,7 +168,12 @@ export default function BoardPage() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-white">Board</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-white">Board</h1>
+              <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-500/10">
+                {activeSprint.name}
+              </Badge>
+            </div>
             <p className="text-sm text-slate-400 mt-1">{currentProject?.name}</p>
           </div>
         </div>
@@ -134,6 +185,17 @@ export default function BoardPage() {
           <Button variant="outline" size="sm">
             <Settings className="w-4 h-4 mr-2" />
             Settings
+          </Button>
+          <Button
+            className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/30"
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              // Complete Sprint Logic could go here or navigate to completion page
+              navigate(`/projects/${projectId}/backlog`) // Just redirect to backlog for management for now
+            }}
+          >
+            Complete Sprint
           </Button>
         </div>
       </div>
