@@ -79,5 +79,11 @@ func (h *AuthHandler) GetMe(c *fiber.Ctx) error {
 		})
 	}
 
+	if !user.IsActive {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Account is deactivated",
+		})
+	}
+
 	return c.JSON(user)
 }

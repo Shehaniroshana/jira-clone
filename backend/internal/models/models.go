@@ -36,9 +36,9 @@ type Project struct {
 	Color       string          `json:"color"`
 	OwnerID     uuid.UUID       `gorm:"type:uuid;not null" json:"ownerId"`
 	Owner       User            `gorm:"foreignKey:OwnerID" json:"owner,omitempty"`
-	Members     []ProjectMember `gorm:"foreignKey:ProjectID" json:"members,omitempty"`
-	Sprints     []Sprint        `gorm:"foreignKey:ProjectID" json:"sprints,omitempty"`
-	Issues      []Issue         `gorm:"foreignKey:ProjectID" json:"issues,omitempty"`
+	Members     []ProjectMember `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"members,omitempty"`
+	Sprints     []Sprint        `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"sprints,omitempty"`
+	Issues      []Issue         `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"issues,omitempty"`
 	CreatedAt   time.Time       `json:"createdAt"`
 	UpdatedAt   time.Time       `json:"updatedAt"`
 }
@@ -74,7 +74,7 @@ type Sprint struct {
 	StartDate *time.Time `json:"startDate"`
 	EndDate   *time.Time `json:"endDate"`
 	Status    string     `gorm:"default:'planned'" json:"status"` // planned, active, completed
-	Issues    []Issue    `gorm:"foreignKey:SprintID" json:"issues,omitempty"`
+	Issues    []Issue    `gorm:"foreignKey:SprintID;constraint:OnDelete:SET NULL" json:"issues,omitempty"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
 }
@@ -91,10 +91,10 @@ type Issue struct {
 	ProjectID     uuid.UUID    `gorm:"type:uuid;not null;index" json:"projectId"`
 	Project       Project      `gorm:"foreignKey:ProjectID" json:"project,omitempty"`
 	SprintID      *uuid.UUID   `gorm:"type:uuid;index" json:"sprintId"`
-	Sprint        *Sprint      `gorm:"foreignKey:SprintID" json:"sprint,omitempty"`
+	Sprint        *Sprint      `gorm:"foreignKey:SprintID;constraint:OnDelete:SET NULL" json:"sprint,omitempty"`
 	ParentIssueID *uuid.UUID   `gorm:"type:uuid;index" json:"parentIssueId"`
-	ParentIssue   *Issue       `gorm:"foreignKey:ParentIssueID" json:"parentIssue,omitempty"`
-	SubTasks      []Issue      `gorm:"foreignKey:ParentIssueID" json:"subTasks,omitempty"`
+	ParentIssue   *Issue       `gorm:"foreignKey:ParentIssueID;constraint:OnDelete:CASCADE" json:"parentIssue,omitempty"`
+	SubTasks      []Issue      `gorm:"foreignKey:ParentIssueID;constraint:OnDelete:CASCADE" json:"subTasks,omitempty"`
 	Key           string       `gorm:"uniqueIndex;not null" json:"key"` // e.g., "PROJ-123"
 	Title         string       `gorm:"not null" json:"title"`
 	Description   string       `json:"description"`
@@ -111,9 +111,9 @@ type Issue struct {
 	Watchers      []User       `gorm:"many2many:issue_watchers;" json:"watchers,omitempty"`
 	Position      int          `gorm:"default:0" json:"position"` // For drag & drop ordering
 	Labels        []Label      `gorm:"many2many:issue_labels;" json:"labels,omitempty"`
-	Comments      []Comment    `gorm:"foreignKey:IssueID" json:"comments,omitempty"`
-	Attachments   []Attachment `gorm:"foreignKey:IssueID" json:"attachments,omitempty"`
-	WorkLogs      []WorkLog    `gorm:"foreignKey:IssueID" json:"workLogs,omitempty"`
+	Comments      []Comment    `gorm:"foreignKey:IssueID;constraint:OnDelete:CASCADE" json:"comments,omitempty"`
+	Attachments   []Attachment `gorm:"foreignKey:IssueID;constraint:OnDelete:CASCADE" json:"attachments,omitempty"`
+	WorkLogs      []WorkLog    `gorm:"foreignKey:IssueID;constraint:OnDelete:CASCADE" json:"workLogs,omitempty"`
 	CreatedAt     time.Time    `json:"createdAt"`
 	UpdatedAt     time.Time    `json:"updatedAt"`
 }
@@ -184,6 +184,7 @@ func (al *ActivityLog) BeforeCreate(tx *gorm.DB) error {
 type Label struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	ProjectID uuid.UUID `gorm:"type:uuid;not null;index" json:"projectId"`
+	Project   Project   `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"-"`
 	Name      string    `gorm:"not null" json:"name"`
 	Color     string    `gorm:"not null" json:"color"` // hex color code
 	CreatedAt time.Time `json:"createdAt"`
