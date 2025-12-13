@@ -226,6 +226,8 @@ func main() {
 	reports := protected.Group("/reports")
 	reports.Get("/project/:projectId/stats", reportHandler.GetProjectStats)
 	reports.Get("/project/:projectId/trend", reportHandler.GetIssuesTrend)
+	reports.Get("/project/:projectId/comprehensive", reportHandler.GetComprehensiveStats)
+	reports.Get("/project/:projectId/team", reportHandler.GetTeamPerformance)
 	reports.Get("/sprint/:sprintId/burndown", reportHandler.GetBurnDown)
 
 	// Issue Link routes

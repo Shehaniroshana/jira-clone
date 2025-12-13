@@ -535,8 +535,8 @@ export default function DashboardPage() {
                         type="button"
                         onClick={() => setFormData({ ...formData, color })}
                         className={`w-8 h-8 rounded-full transition-all ${formData.color === color
-                            ? 'ring-2 ring-offset-2 ring-offset-slate-900 ring-white scale-110'
-                            : 'hover:scale-110'
+                          ? 'ring-2 ring-offset-2 ring-offset-slate-900 ring-white scale-110'
+                          : 'hover:scale-110'
                           }`}
                         style={{
                           backgroundColor: color,

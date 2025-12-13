@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/select"
 import type { CreateIssueInput } from '@/types'
 import {
-  Plus, ArrowLeft, Filter,
+  Plus, ArrowLeft, Search, X,
   CheckCircle2, AlertCircle, Bug, BookOpen, Layers,
-  Rocket
+  Rocket, Zap, Target, Clock, Sparkles, User
 } from 'lucide-react'
 import { getInitials, cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
@@ -29,27 +29,77 @@ import IssueDetailModal from '@/components/IssueDetailModal'
 import type { Issue } from '@/types'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 
+// Neon Theme Colors
+const THEME = {
+  cyan: '#06b6d4',
+  blue: '#3b82f6',
+  purple: '#8b5cf6',
+  emerald: '#10b981',
+  amber: '#f59e0b',
+  rose: '#f43f5e',
+}
+
 const STATUS_CONFIG = {
-  todo: { label: 'To Do', color: 'bg-slate-700' },
-  in_progress: { label: 'In Progress', color: 'bg-blue-600' },
-  in_review: { label: 'In Review', color: 'bg-purple-600' },
-  done: { label: 'Done', color: 'bg-emerald-600' },
+  todo: {
+    label: 'To Do',
+    color: '#64748b',
+    gradient: 'from-slate-500/20 to-slate-600/10',
+    icon: Target,
+    glow: 'rgba(100, 116, 139, 0.3)'
+  },
+  in_progress: {
+    label: 'In Progress',
+    color: '#3b82f6',
+    gradient: 'from-blue-500/20 to-blue-600/10',
+    icon: Zap,
+    glow: 'rgba(59, 130, 246, 0.3)'
+  },
+  in_review: {
+    label: 'In Review',
+    color: '#8b5cf6',
+    gradient: 'from-purple-500/20 to-purple-600/10',
+    icon: Clock,
+    glow: 'rgba(139, 92, 246, 0.3)'
+  },
+  done: {
+    label: 'Done',
+    color: '#10b981',
+    gradient: 'from-emerald-500/20 to-emerald-600/10',
+    icon: CheckCircle2,
+    glow: 'rgba(16, 185, 129, 0.3)'
+  },
 }
 
 const ISSUE_TYPES = [
-  { id: 'story', label: 'Story', icon: BookOpen, color: 'text-green-400' },
-  { id: 'task', label: 'Task', icon: CheckCircle2, color: 'text-blue-400' },
-  { id: 'bug', label: 'Bug', icon: Bug, color: 'text-red-400' },
-  { id: 'epic', label: 'Epic', icon: Layers, color: 'text-purple-400' },
+  { id: 'story', label: 'Story', icon: BookOpen, color: '#10b981', bg: 'bg-emerald-500/20' },
+  { id: 'task', label: 'Task', icon: CheckCircle2, color: '#3b82f6', bg: 'bg-blue-500/20' },
+  { id: 'bug', label: 'Bug', icon: Bug, color: '#f43f5e', bg: 'bg-rose-500/20' },
+  { id: 'epic', label: 'Epic', icon: Layers, color: '#8b5cf6', bg: 'bg-purple-500/20' },
 ]
 
-const PRIORITY_COLORS: Record<string, string> = {
-  highest: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-yellow-500',
-  low: 'bg-blue-500',
-  lowest: 'bg-slate-500',
+const PRIORITY_CONFIG: Record<string, { color: string; glow: string; label: string }> = {
+  highest: { color: '#ef4444', glow: 'rgba(239, 68, 68, 0.6)', label: 'Highest' },
+  high: { color: '#f97316', glow: 'rgba(249, 115, 22, 0.5)', label: 'High' },
+  medium: { color: '#eab308', glow: 'rgba(234, 179, 8, 0.4)', label: 'Medium' },
+  low: { color: '#06b6d4', glow: 'rgba(6, 182, 212, 0.4)', label: 'Low' },
+  lowest: { color: '#64748b', glow: 'rgba(100, 116, 139, 0.3)', label: 'Lowest' },
 }
+
+// Animated Stats Card Component
+const StatsCard = ({ label, value, icon: Icon, color }: { label: string; value: number; icon: any; color: string }) => (
+  <div className="flex items-center gap-3 px-4 py-2 rounded-xl glass-card">
+    <div
+      className="p-2 rounded-lg"
+      style={{ backgroundColor: `${color}20` }}
+    >
+      <Icon className="w-4 h-4" style={{ color }} />
+    </div>
+    <div>
+      <p className="text-lg font-bold text-white">{value}</p>
+      <p className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</p>
+    </div>
+  </div>
+)
 
 export default function BoardPage() {
   const { projectId } = useParams<{ projectId: string }>()
@@ -59,7 +109,7 @@ export default function BoardPage() {
   const { sprints, fetchSprints } = useSprintStore()
   const { toast } = useToast()
 
-  const { user } = useAuthStore() // Import useAuthStore first
+  const { user } = useAuthStore()
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -135,22 +185,15 @@ export default function BoardPage() {
 
   const boardIssues = (issues[projectId || ''] || []) as Issue[]
 
-  // Filter issues for the active sprint
   const sprintIssues = activeSprint
     ? boardIssues.filter(i => {
-      // Base sprint filter
       if (i.sprintId !== activeSprint.id) return false
-
-      // Search filter
       if (searchQuery && !i.title.toLowerCase().includes(searchQuery.toLowerCase()) && !i.key.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false
       }
-
-      // User filter
       if (userFilter === 'mine' && i.assigneeId !== user?.id) {
         return false
       }
-
       return true
     })
     : []
@@ -161,6 +204,11 @@ export default function BoardPage() {
     in_review: sprintIssues.filter(i => i.status === 'in_review' && i.type !== 'subtask'),
     done: sprintIssues.filter(i => i.status === 'done' && i.type !== 'subtask'),
   }
+
+  // Stats
+  const totalIssues = sprintIssues.filter(i => i.type !== 'subtask').length
+  const totalPoints = sprintIssues.reduce((acc, i) => acc + (i.storyPoints || 0), 0)
+  const completedPoints = columns.done.reduce((acc, i) => acc + (i.storyPoints || 0), 0)
 
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result
@@ -179,7 +227,7 @@ export default function BoardPage() {
         title: 'Issue Updated',
         description: `Issue moved to ${STATUS_CONFIG[newStatus].label}`,
       })
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update issue',
@@ -188,23 +236,20 @@ export default function BoardPage() {
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    const typeConfig = ISSUE_TYPES.find(t => t.id === type)
-    if (!typeConfig) return null
-    const Icon = typeConfig.icon
-    return <Icon className={`w-4 h-4 ${typeConfig.color}`} />
+  const getTypeConfig = (type: string) => {
+    return ISSUE_TYPES.find(t => t.id === type) || ISSUE_TYPES[1]
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-fade-in p-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-3xl font-bold text-white">Board</h1>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative w-16 h-16 mx-auto">
+            <div className="absolute inset-0 rounded-full border-4 border-slate-800" />
+            <div className="absolute inset-0 rounded-full border-4 border-t-cyan-500 animate-spin" />
+          </div>
+          <p className="text-slate-400">Loading board...</p>
         </div>
-        <div className="text-slate-400">Loading board...</div>
       </div>
     )
   }
@@ -212,126 +257,139 @@ export default function BoardPage() {
   if (!activeSprint) {
     return (
       <div className="space-y-6 animate-fade-in p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-white">Board</h1>
-              <p className="text-sm text-slate-400 mt-1">{currentProject?.name}</p>
-            </div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)} className="hover:bg-cyan-500/10">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Sprint Board</h1>
+            <p className="text-sm text-slate-400 mt-1">{currentProject?.name}</p>
           </div>
         </div>
 
-        {/* Empty State */}
-        <div className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-2xl border-dashed border-2 border-slate-700">
-          <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
-            <Rocket className="w-10 h-10 text-slate-500" />
+        <div className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-2xl border border-slate-700/50 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
+          <div className="relative z-10">
+            <div className="w-24 h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mb-6 mx-auto border border-slate-700/50">
+              <Rocket className="w-12 h-12 text-cyan-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">No Active Sprint</h2>
+            <p className="text-slate-400 max-w-md mb-8">
+              Start a sprint from the backlog to begin tracking work on this board.
+            </p>
+            <Button onClick={() => navigate(`/projects/${projectId}/backlog`)} className="btn-neon">
+              <Rocket className="w-4 h-4 mr-2" />
+              Go to Backlog
+            </Button>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">No Active Sprint</h2>
-          <p className="text-slate-400 max-w-md mb-8">
-            There is no active sprint in this project. Go to the Backlog to create and start a sprint.
-          </p>
-          <Button
-            onClick={() => navigate(`/projects/${projectId}/backlog`)}
-            className="btn-neon"
-          >
-            Go to Backlog
-          </Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 animate-fade-in p-6">
+    <div className="space-y-6 animate-fade-in p-6 pb-20">
       {/* Header */}
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)} className="hover:bg-cyan-500/10">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-white">Board</h1>
-                <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-500/10">
+                <h1 className="text-3xl font-black text-white tracking-tight">
+                  <span className="text-gradient-animate">Sprint Board</span>
+                </h1>
+                <div
+                  className="px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 border"
+                  style={{
+                    backgroundColor: `${THEME.cyan}15`,
+                    borderColor: `${THEME.cyan}30`,
+                    color: THEME.cyan,
+                  }}
+                >
+                  <Zap className="w-3.5 h-3.5" />
                   {activeSprint.name}
-                </Badge>
+                </div>
               </div>
-              <p className="text-sm text-slate-400 mt-1">{currentProject?.name}</p>
+              <p className="text-sm text-slate-500 mt-1">{currentProject?.name}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-3">
             <Button
               onClick={() => setShowCreateIssueModal(true)}
-              className="btn-neon mr-2"
+              className="btn-neon gap-2"
               size="sm"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Create Issue
-            </Button>
-            <Button
-              className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/30"
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(`/projects/${projectId}/backlog`)}
-            >
-              Complete Sprint
             </Button>
           </div>
         </div>
 
-        {/* Filters Toolbar */}
-        <div className="flex items-center justify-between p-2 glass-card rounded-lg">
-          <div className="flex items-center gap-4 flex-1">
-            {/* Search */}
-            <div className="relative max-w-xs w-full">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Filter className="w-4 h-4 text-slate-500" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search board..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-md py-1.5 pl-9 pr-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+        {/* Stats Bar */}
+        <div className="flex flex-wrap items-center gap-4">
+          <StatsCard label="Total Issues" value={totalIssues} icon={Layers} color={THEME.cyan} />
+          <StatsCard label="In Progress" value={columns.in_progress.length} icon={Zap} color={THEME.blue} />
+          <StatsCard label="Done" value={columns.done.length} icon={CheckCircle2} color={THEME.emerald} />
+          <StatsCard label="Points" value={`${completedPoints}/${totalPoints}` as any} icon={Target} color={THEME.purple} />
+
+          {/* Progress Bar */}
+          <div className="flex-1 min-w-[200px]">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+              <span>Sprint Progress</span>
+              <span>{totalIssues > 0 ? Math.round((columns.done.length / totalIssues) * 100) : 0}%</span>
+            </div>
+            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${totalIssues > 0 ? (columns.done.length / totalIssues) * 100 : 0}%`,
+                  background: `linear-gradient(90deg, ${THEME.emerald} 0%, ${THEME.cyan} 100%)`,
+                  boxShadow: `0 0 20px ${THEME.emerald}50`,
+                }}
               />
             </div>
+          </div>
+        </div>
 
-            {/* My Issues Filter */}
-            <div className="h-6 w-px bg-slate-700/50" /> {/* Divider */}
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Quick Filters:</span>
-              <button
-                onClick={() => setUserFilter(userFilter === 'mine' ? 'all' : 'mine')}
-                className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 border",
-                  userFilter === 'mine'
-                    ? "bg-cyan-500/20 text-cyan-400 border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]"
-                    : "text-slate-400 border-transparent hover:text-white hover:bg-slate-700"
-                )}
-              >
-                My Issues
-              </button>
-              {/* Additional filters can go here, e.g. "Recently Updated" */}
-            </div>
+        {/* Filters */}
+        <div className="flex items-center gap-4 p-3 glass-card rounded-xl border border-slate-700/30">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search issues..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-all"
+            />
           </div>
 
-          {/* Clear Filters */}
+          <div className="h-6 w-px bg-slate-700/50" />
+
+          <button
+            onClick={() => setUserFilter(userFilter === 'mine' ? 'all' : 'mine')}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+              userFilter === 'mine'
+                ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                : "text-slate-400 hover:text-white hover:bg-slate-700/50"
+            )}
+          >
+            <User className="w-4 h-4" />
+            My Issues
+          </button>
+
           {(searchQuery || userFilter !== 'all') && (
             <button
-              onClick={() => {
-                setSearchQuery('')
-                setUserFilter('all')
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 transition-colors"
+              onClick={() => { setSearchQuery(''); setUserFilter('all'); }}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-rose-400 hover:text-rose-300 rounded-lg hover:bg-rose-500/10 transition-colors"
             >
-              <Layers className="w-3.5 h-3.5" />
-              Clear Filters
+              <X className="w-3.5 h-3.5" />
+              Clear
             </button>
           )}
         </div>
@@ -339,100 +397,147 @@ export default function BoardPage() {
 
       {/* Board */}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(columns).map(([status, statusIssues]) => (
-            <div key={status} className="space-y-2">
-              {/* Column Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${STATUS_CONFIG[status as keyof typeof STATUS_CONFIG].color}`} />
-                  <h2 className="text-sm font-semibold text-white">
-                    {STATUS_CONFIG[status as keyof typeof STATUS_CONFIG].label}
-                  </h2>
-                  <Badge variant="secondary" className="ml-auto">
-                    {statusIssues.length}
-                  </Badge>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {Object.entries(columns).map(([status, statusIssues]) => {
+            const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
+            const Icon = config.icon
 
-              {/* Droppable Area */}
-              <Droppable droppableId={status} type="ISSUE">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={cn(
-                      'space-y-2 min-h-96 p-2 rounded-lg transition-colors',
-                      snapshot.isDraggingOver ? 'bg-slate-800/50' : 'bg-transparent'
-                    )}
-                  >
-                    {statusIssues.map((issue, index) => (
-                      <Draggable key={issue.id} draggableId={issue.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={cn(
-                              'glass-card p-3 rounded-lg cursor-grab active:cursor-grabbing hover:shadow-lg transition-all',
-                              snapshot.isDragging && 'shadow-2xl opacity-95'
-                            )}
-                            onClick={() => setSelectedIssue(issue)}
-                          >
-                            {/* Issue Key */}
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs font-semibold text-cyan-400">
-                                {issue.key}
-                              </span>
-                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[issue.priority] }} />
-                            </div>
-
-                            {/* Issue Title */}
-                            <p className="text-sm font-medium text-white mb-2 line-clamp-2 hover:text-cyan-400">
-                              {issue.title}
-                            </p>
-
-                            {/* Issue Type and Story Points */}
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-1">
-                                {getTypeIcon(issue.type)}
-                                <span className="text-xs text-slate-400">
-                                  {ISSUE_TYPES.find(t => t.id === issue.type)?.label}
-                                </span>
-                              </div>
-                              {issue.storyPoints && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {issue.storyPoints} pts
-                                </Badge>
-                              )}
-                            </div>
-
-                            {/* Assignee */}
-                            {issue.assignee && (
-                              <div className="flex items-center gap-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarFallback className="text-xs">
-                                    {getInitials(`${issue.assignee.firstName} ${issue.assignee.lastName}`)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs text-slate-400">
-                                  {issue.assignee.firstName}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
+            return (
+              <div key={status} className="space-y-3">
+                {/* Column Header */}
+                <div
+                  className={`flex items-center justify-between p-3 rounded-xl glass-card bg-gradient-to-r ${config.gradient}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="p-1.5 rounded-lg"
+                      style={{ backgroundColor: `${config.color}20` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: config.color }} />
+                    </div>
+                    <h2 className="text-sm font-semibold text-white">{config.label}</h2>
                   </div>
-                )}
-              </Droppable>
-            </div>
-          ))}
+                  <div
+                    className="px-2 py-0.5 rounded-full text-xs font-bold"
+                    style={{
+                      backgroundColor: `${config.color}20`,
+                      color: config.color,
+                    }}
+                  >
+                    {statusIssues.length}
+                  </div>
+                </div>
+
+                {/* Droppable Area */}
+                <Droppable droppableId={status} type="ISSUE">
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={cn(
+                        'space-y-3 min-h-[500px] p-3 rounded-xl glass-panel transition-all duration-200',
+                        snapshot.isDraggingOver && 'ring-2 ring-cyan-500/30'
+                      )}
+                      style={{
+                        boxShadow: snapshot.isDraggingOver ? `0 0 30px ${config.glow}` : 'none',
+                      }}
+                    >
+                      {statusIssues.map((issue, index) => {
+                        const typeConfig = getTypeConfig(issue.type)
+                        const priorityConfig = PRIORITY_CONFIG[issue.priority] || PRIORITY_CONFIG.medium
+
+                        return (
+                          <Draggable key={issue.id} draggableId={issue.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={cn(
+                                  'group relative glass-card-hover rounded-xl p-4 cursor-grab active:cursor-grabbing',
+                                  snapshot.isDragging && 'shadow-2xl ring-2 ring-cyan-500/50 rotate-2 scale-105 !opacity-95',
+                                  !snapshot.isDragging && 'hover:-translate-y-1'
+                                )}
+                                onClick={() => !snapshot.isDragging && setSelectedIssue(issue)}
+                              >
+                                <div>
+                                  {/* Header Row */}
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span
+                                      className="text-xs font-bold tracking-wide"
+                                      style={{ color: THEME.cyan }}
+                                    >
+                                      {issue.key}
+                                    </span>
+                                    <div
+                                      className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                                      style={{
+                                        backgroundColor: `${typeConfig.color}20`,
+                                        color: typeConfig.color,
+                                      }}
+                                    >
+                                      <typeConfig.icon className="w-3 h-3" />
+                                      {typeConfig.label}
+                                    </div>
+                                  </div>
+
+                                  {/* Title */}
+                                  <p className="text-sm font-medium text-white mb-3 line-clamp-2 group-hover:text-cyan-100 transition-colors">
+                                    {issue.title}
+                                  </p>
+
+                                  {/* Footer */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      {issue.storyPoints && (
+                                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-800/80 text-xs text-slate-400">
+                                          <Target className="w-3 h-3" />
+                                          {issue.storyPoints}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {issue.assignee ? (
+                                      <Avatar className="w-6 h-6 border-2 border-slate-700">
+                                        <AvatarFallback
+                                          className="text-[10px] font-semibold"
+                                          style={{
+                                            background: `linear-gradient(135deg, ${THEME.cyan} 0%, ${THEME.blue} 100%)`,
+                                            color: 'white',
+                                          }}
+                                        >
+                                          {getInitials(`${issue.assignee.firstName} ${issue.assignee.lastName}`)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ) : (
+                                      <div className="w-6 h-6 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center">
+                                        <User className="w-3 h-3 text-slate-600" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        )
+                      })}
+                      {provided.placeholder}
+
+                      {/* Empty State */}
+                      {statusIssues.length === 0 && !snapshot.isDraggingOver && (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                          <Sparkles className="w-8 h-8 text-slate-700 mb-2" />
+                          <p className="text-xs text-slate-600">Drop issues here</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Droppable>
+              </div>
+            )
+          })}
         </div>
       </DragDropContext>
-
 
       {/* Issue Detail Modal */}
       {selectedIssue && (
@@ -445,21 +550,28 @@ export default function BoardPage() {
 
       {/* Create Issue Modal */}
       {showCreateIssueModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="w-full max-w-lg animate-scale-in glass-card border-slate-700 rounded-2xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white">Create Issue in Sprint</CardTitle>
-                <Button variant="ghost" size="icon" onClick={() => setShowCreateIssueModal(false)}>
-                  <AlertCircle className="w-4 h-4 text-slate-400" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="w-full max-w-lg animate-scale-in glass-card border border-slate-700/50 rounded-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-500/10 via-transparent to-purple-500/10 p-6">
+              <CardHeader className="p-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-cyan-500/20">
+                      <Plus className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <CardTitle className="text-white">Create Issue</CardTitle>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setShowCreateIssueModal(false)} className="hover:bg-slate-800">
+                    <X className="w-4 h-4 text-slate-400" />
+                  </Button>
+                </div>
+              </CardHeader>
+            </div>
+            <CardContent className="p-6">
               <form onSubmit={handleCreateIssue} className="space-y-4">
                 {error && (
-                  <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-                    <AlertCircle className="w-4 h-4" />
+                  <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-400 text-sm">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     {error}
                   </div>
                 )}
@@ -478,10 +590,10 @@ export default function BoardPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-300">Description</label>
                   <textarea
-                    placeholder="Describe the issue..."
+                    placeholder="Add details..."
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full min-h-[100px] bg-slate-900/50 border border-slate-700 rounded-md p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors backdrop-blur-sm"
+                    className="w-full min-h-[100px] bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
                   />
                 </div>
 
@@ -492,12 +604,17 @@ export default function BoardPage() {
                       value={formData.type}
                       onValueChange={(value) => setFormData({ ...formData, type: value as any })}
                     >
-                      <SelectTrigger className="w-full bg-slate-900/50 border-slate-700 text-white focus:ring-cyan-500 backdrop-blur-sm">
+                      <SelectTrigger className="w-full bg-slate-900/50 border-slate-700 text-white">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-slate-700 text-white">
+                      <SelectContent className="bg-slate-900 border-slate-700">
                         {ISSUE_TYPES.map(type => (
-                          <SelectItem key={type.id} value={type.id} className="focus:bg-slate-800 focus:text-cyan-400">{type.label}</SelectItem>
+                          <SelectItem key={type.id} value={type.id} className="text-white focus:bg-slate-800">
+                            <div className="flex items-center gap-2">
+                              <type.icon className="w-4 h-4" style={{ color: type.color }} />
+                              {type.label}
+                            </div>
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -508,32 +625,37 @@ export default function BoardPage() {
                       value={formData.priority}
                       onValueChange={(value) => setFormData({ ...formData, priority: value as any })}
                     >
-                      <SelectTrigger className="w-full bg-slate-900/50 border-slate-700 text-white focus:ring-cyan-500 backdrop-blur-sm">
+                      <SelectTrigger className="w-full bg-slate-900/50 border-slate-700 text-white">
                         <SelectValue placeholder="Select priority" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-slate-700 text-white">
-                        {Object.keys(PRIORITY_COLORS).map(priority => (
-                          <SelectItem key={priority} value={priority} className="focus:bg-slate-800 focus:text-cyan-400">
-                            {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                      <SelectContent className="bg-slate-900 border-slate-700">
+                        {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                          <SelectItem key={key} value={key} className="text-white focus:bg-slate-800">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: config.color }} />
+                              {config.label}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-300">Story Points</label>
                   <Input
                     type="number"
-                    placeholder="Estimate (0-100)"
+                    placeholder="Estimate effort"
                     value={formData.storyPoints || ''}
                     onChange={(e) => setFormData({ ...formData, storyPoints: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-900/50 border-slate-700 text-white focus:border-cyan-500 backdrop-blur-sm"
+                    className="bg-slate-900/50 border-slate-700 text-white focus:border-cyan-500"
                   />
                 </div>
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-4">
                   <Button type="submit" className="flex-1 btn-neon">
+                    <Sparkles className="w-4 h-4 mr-2" />
                     Create Issue
                   </Button>
                   <Button
