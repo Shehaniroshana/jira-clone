@@ -33,7 +33,6 @@ export default function SpaceBackground() {
     const BASE_SPEED = 2
     const GRID_SIZE = 40 // Resolution of the flow field
     const ZOOM = 0.005 // Noise zoom
-    const CURVE = 20 // Curviness of the noise
     // ---------------------
 
     class Particle {
@@ -117,12 +116,6 @@ export default function SpaceBackground() {
     const particles: Particle[] = []
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle())
-    }
-
-    // Pseudo-Noise Function (Simplex-ish)
-    // We'll precompute or compute on fly. Computing on fly for grid is okay.
-    const noise = (x: number, y: number, z: number) => {
-      return Math.sin(x) * Math.cos(y) * Math.sin(z)
     }
 
     function draw() {

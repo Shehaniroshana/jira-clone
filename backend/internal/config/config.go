@@ -9,12 +9,14 @@ import (
 )
 
 type Config struct {
+	DBDriver       string
 	DBHost         string
 	DBPort         string
 	DBUser         string
 	DBPassword     string
 	DBName         string
 	DBSSLMode      string
+	DBPath         string
 	JWTSecret      string
 	JWTExpiration  string
 	Port           string
@@ -37,12 +39,14 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
+		DBDriver:       getEnv("DB_DRIVER", "postgres"),
 		DBHost:         getEnv("DB_HOST", "localhost"),
 		DBPort:         getEnv("DB_PORT", "5432"),
 		DBUser:         getEnv("DB_USER", "postgres"),
 		DBPassword:     getEnv("DB_PASSWORD", "postgres"),
 		DBName:         getEnv("DB_NAME", "jira_clone"),
 		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
+		DBPath:         getEnv("DB_PATH", "./jira-clone.db"),
 		JWTSecret:      getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
 		JWTExpiration:  getEnv("JWT_EXPIRATION", "24h"),
 		Port:           getEnv("PORT", "8080"),

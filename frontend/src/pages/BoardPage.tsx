@@ -5,7 +5,6 @@ import { useAuthStore } from '@/store/authStore'
 import { useIssueStore } from '@/store/issueStore'
 import { useProjectStore } from '@/store/projectStore'
 import { useSprintStore } from '@/store/sprintStore'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -444,7 +443,6 @@ export default function BoardPage() {
                     >
                       {statusIssues.map((issue, index) => {
                         const typeConfig = getTypeConfig(issue.type)
-                        const priorityConfig = PRIORITY_CONFIG[issue.priority] || PRIORITY_CONFIG.medium
 
                         return (
                           <Draggable key={issue.id} draggableId={issue.id} index={index}>

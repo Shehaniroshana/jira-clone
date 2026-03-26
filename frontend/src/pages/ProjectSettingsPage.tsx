@@ -10,7 +10,6 @@ import {
   Palette, AlertTriangle, UserPlus, FolderCog
 } from 'lucide-react'
 import { useProjectStore } from '@/store/projectStore'
-import { useAuthStore } from '@/store/authStore'
 import { useToast } from '@/hooks/use-toast'
 import { getInitials } from '@/lib/utils'
 import { userService } from '@/services/userService'
@@ -39,7 +38,6 @@ export default function ProjectSettingsPage() {
     addMember,
     removeMember,
   } = useProjectStore()
-  const { user: currentUser } = useAuthStore()
   const { toast } = useToast()
 
   const [activeTab, setActiveTab] = useState<'general' | 'members' | 'roles' | 'danger'>('general')
@@ -130,7 +128,7 @@ export default function ProjectSettingsPage() {
     }
   }
 
-  const handleUpdateRole = async (userId: string, newRole: string) => {
+  const handleUpdateRole = async (_userId: string, _newRole: string) => {
     toast({
       title: 'Not Implemented',
       description: 'Role updates are coming soon!',

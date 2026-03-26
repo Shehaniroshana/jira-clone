@@ -55,7 +55,7 @@ export default function LoginPage() {
                 <Zap className="w-8 h-8 text-white" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-gradient">JiraFlow</span>
+            <span className="text-3xl font-bold text-gradient">Call Clone</span>
           </div>
 
           <h1 className="text-5xl font-black text-white mb-4 leading-tight">
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 <Zap className="w-7 h-7 text-white" />
               </div>
             </div>
-            <span className="text-2xl font-bold text-gradient">JiraFlow</span>
+            <span className="text-2xl font-bold text-gradient">Call Clone</span>
           </div>
 
           {/* Login Card */}

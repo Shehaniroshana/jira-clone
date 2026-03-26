@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	Email     string    `gorm:"uniqueIndex;not null" json:"email"`
 	Password  string    `gorm:"not null" json:"-"`
 	FirstName string    `gorm:"not null" json:"firstName"`
@@ -28,7 +28,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Project struct {
-	ID          uuid.UUID       `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID          uuid.UUID       `gorm:"type:uuid;primary_key" json:"id"`
 	Key         string          `gorm:"uniqueIndex;not null" json:"key"` // e.g., "PROJ"
 	Name        string          `gorm:"not null" json:"name"`
 	Description string          `json:"description"`
@@ -51,7 +51,7 @@ func (p *Project) BeforeCreate(tx *gorm.DB) error {
 }
 
 type ProjectMember struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	ProjectID uuid.UUID `gorm:"type:uuid;not null;index" json:"projectId"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null;index" json:"userId"`
 	User      User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
@@ -67,7 +67,7 @@ func (pm *ProjectMember) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Sprint struct {
-	ID        uuid.UUID  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID  `gorm:"type:uuid;primary_key" json:"id"`
 	ProjectID uuid.UUID  `gorm:"type:uuid;not null;index" json:"projectId"`
 	Name      string     `gorm:"not null" json:"name"`
 	Goal      string     `json:"goal"`
@@ -87,7 +87,7 @@ func (s *Sprint) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Issue struct {
-	ID            uuid.UUID    `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID            uuid.UUID    `gorm:"type:uuid;primary_key" json:"id"`
 	ProjectID     uuid.UUID    `gorm:"type:uuid;not null;index" json:"projectId"`
 	Project       Project      `gorm:"foreignKey:ProjectID" json:"project,omitempty"`
 	SprintID      *uuid.UUID   `gorm:"type:uuid;index" json:"sprintId"`
@@ -126,7 +126,7 @@ func (i *Issue) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Comment struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	IssueID   uuid.UUID `gorm:"type:uuid;not null;index" json:"issueId"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null" json:"userId"`
 	User      User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
@@ -143,7 +143,7 @@ func (c *Comment) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Attachment struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	IssueID   uuid.UUID `gorm:"type:uuid;not null;index" json:"issueId"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null" json:"userId"`
 	User      User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
@@ -162,7 +162,7 @@ func (a *Attachment) BeforeCreate(tx *gorm.DB) error {
 }
 
 type ActivityLog struct {
-	ID         uuid.UUID  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID         uuid.UUID  `gorm:"type:uuid;primary_key" json:"id"`
 	UserID     uuid.UUID  `gorm:"type:uuid;not null" json:"userId"`
 	User       User       `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	ProjectID  *uuid.UUID `gorm:"type:uuid;index" json:"projectId"`
@@ -182,7 +182,7 @@ func (al *ActivityLog) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Label struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	ProjectID uuid.UUID `gorm:"type:uuid;not null;index" json:"projectId"`
 	Project   Project   `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"-"`
 	Name      string    `gorm:"not null" json:"name"`
@@ -198,7 +198,7 @@ func (l *Label) BeforeCreate(tx *gorm.DB) error {
 }
 
 type WorkLog struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	IssueID     uuid.UUID `gorm:"type:uuid;not null;index" json:"issueId"`
 	UserID      uuid.UUID `gorm:"type:uuid;not null" json:"userId"`
 	User        User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
@@ -217,7 +217,7 @@ func (wl *WorkLog) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Notification struct {
-	ID         uuid.UUID  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID         uuid.UUID  `gorm:"type:uuid;primary_key" json:"id"`
 	UserID     uuid.UUID  `gorm:"type:uuid;not null;index" json:"userId"`
 	User       User       `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	ActorID    *uuid.UUID `gorm:"type:uuid" json:"actorId"`
@@ -239,7 +239,7 @@ func (n *Notification) BeforeCreate(tx *gorm.DB) error {
 }
 
 type IssueLink struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
 	SourceID  uuid.UUID `gorm:"type:uuid;not null;index" json:"sourceId"`
 	Source    Issue     `gorm:"foreignKey:SourceID" json:"source,omitempty"`
 	TargetID  uuid.UUID `gorm:"type:uuid;not null;index" json:"targetId"`

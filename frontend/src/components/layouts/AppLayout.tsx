@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials } from '@/lib/utils'
 import {
   LogOut, LayoutDashboard,
-  Search, ChevronDown,
+  ChevronDown,
   List, Zap, Shield, TrendingUp, Settings, Milestone
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -58,7 +58,7 @@ export default function AppLayout() {
               </div>
             </div>
             <span className="text-xl font-bold text-gradient tracking-tight">
-              JiraFlow
+              Call Clone
             </span>
           </Link>
         </div>

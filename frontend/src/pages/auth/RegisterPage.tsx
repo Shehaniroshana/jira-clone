@@ -47,7 +47,7 @@ export default function RegisterPage() {
       })
       toast({
         title: "Account created! 🎉",
-        description: "Welcome to JiraFlow! Let's get started.",
+        description: "Welcome to Call Clone! Let's get started.",
       })
       navigate('/')
     } catch (error: any) {
@@ -80,7 +80,7 @@ export default function RegisterPage() {
                 <Zap className="w-8 h-8 text-white" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-gradient">JiraFlow</span>
+            <span className="text-3xl font-bold text-gradient">Call Clone</span>
           </div>
 
           <h1 className="text-5xl font-black text-white mb-4 leading-tight">
@@ -88,7 +88,7 @@ export default function RegisterPage() {
             <span className="text-gradient-animate">productivity journey</span>
           </h1>
           <p className="text-xl text-slate-400 mb-12 max-w-lg leading-relaxed">
-            Join thousands of teams who use JiraFlow to ship better products faster.
+            Join thousands of teams who use Call Clone to ship better products faster.
           </p>
 
           {/* Benefits */}
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                 <Zap className="w-7 h-7 text-white" />
               </div>
             </div>
-            <span className="text-2xl font-bold text-gradient">JiraFlow</span>
+            <span className="text-2xl font-bold text-gradient">Call Clone</span>
           </div>
 
           {/* Register Card */}

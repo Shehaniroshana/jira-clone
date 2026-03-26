@@ -16,6 +16,8 @@ vendor/
 *.log
 
 # Frontend
+node_modules
+release
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/

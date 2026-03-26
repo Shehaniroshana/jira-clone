@@ -107,8 +107,15 @@ go run cmd/api/main.go
 
 3. **Setup Frontend**
 ```bash
-cd frontend
 npm install
+npm run dev
+```
+
+This installs frontend dependencies from the project root using npm workspaces.
+
+Or run the frontend commands directly from root:
+
+```bash
 npm run dev
 ```
 

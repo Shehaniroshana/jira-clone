@@ -59,14 +59,6 @@ const PRIORITY_COLORS: Record<string, string> = {
   lowest: THEME.slate,
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  story: THEME.emerald,
-  task: THEME.blue,
-  bug: THEME.rose,
-  epic: THEME.purple,
-  subtask: THEME.teal,
-}
-
 // Custom Tooltip Component
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -91,49 +83,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
-// Treemap Content Component
-const CustomizedTreemapContent = (props: any) => {
-  const { x, y, width, height, name, value, depth, colors, index, root } = props;
-  if (depth !== 1 || width < 40 || height < 30) return null;
-
-  const colorIndex = Math.floor((index / Math.max((root?.children?.length || 1), 1)) * colors.length);
-
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: colors[colorIndex % colors.length],
-          stroke: '#0f172a',
-          strokeWidth: 3,
-          rx: 8,
-        }}
-      />
-      <text
-        x={x + width / 2}
-        y={y + height / 2 - 6}
-        textAnchor="middle"
-        fill="#fff"
-        fontSize={Math.min(14, width / 6)}
-        fontWeight="bold"
-      >
-        {name}
-      </text>
-      <text
-        x={x + width / 2}
-        y={y + height / 2 + 12}
-        textAnchor="middle"
-        fill="rgba(255,255,255,0.7)"
-        fontSize={Math.min(11, width / 8)}
-      >
-        {value} issues
-      </text>
-    </g>
-  );
-};
 
 // Animated Counter Component
 const AnimatedCounter = ({ value, suffix = '', prefix = '' }: { value: number; suffix?: string; prefix?: string }) => {
@@ -292,13 +241,6 @@ const TeamMemberCard = ({ member, rank }: { member: TeamMemberStats; rank: numbe
     ? Math.round((member.completedIssues / member.assignedIssues) * 100)
     : 0;
 
-  const formatTime = (minutes: number) => {
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  };
-
   return (
     <div className="glass-card p-4 rounded-xl border border-slate-800/50 hover:border-slate-700/50 transition-all duration-300 group hover:translate-y-[-2px]">
       <div className="flex items-center gap-4">
@@ -363,7 +305,7 @@ export default function ReportsPage() {
     if (!projectId) return;
     setIsLoading(true);
     try {
-      const [projectData, statsData] = await Promise.all([
+      const [, statsData] = await Promise.all([
         fetchProject(projectId),
         reportService.getComprehensiveStats(projectId)
       ]);
@@ -455,17 +397,6 @@ export default function ReportsPage() {
       name: b.bucket,
       value: b.count,
       fill: colors[i] || THEME.slate,
-    }));
-  }, [stats]);
-
-  const sprintFunnelData = useMemo(() => {
-    if (!stats?.sprintStats || stats.sprintStats.length === 0) return [];
-    // Get recent sprints for funnel visualization
-    return stats.sprintStats.slice(0, 5).map(s => ({
-      name: s.name,
-      value: s.totalIssues,
-      completed: s.completedIssues,
-      fill: s.status === 'active' ? THEME.cyan : s.status === 'completed' ? THEME.emerald : THEME.slate,
     }));
   }, [stats]);
 
@@ -961,7 +892,9 @@ export default function ReportsPage() {
                   <XAxis
                     dataKey="name"
                     stroke={THEME.text}
-                    tick={{ fontSize: 11, angle: -45, textAnchor: 'end' }}
+                    tick={{ fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
                     tickLine={false}
                     height={60}
                   />
@@ -1034,7 +967,7 @@ export default function ReportsPage() {
             />
             {stats.sprintStats && stats.sprintStats.length > 0 ? (
               <div className="space-y-4">
-                {stats.sprintStats.slice(0, 5).map((sprint, index) => {
+                {stats.sprintStats.slice(0, 5).map((sprint) => {
                   const progress = sprint.totalIssues > 0
                     ? (sprint.completedIssues / sprint.totalIssues) * 100
                     : 0;
@@ -1215,7 +1148,7 @@ export default function ReportsPage() {
                 </ResponsiveContainer>
               </div>
               <div className="space-y-3">
-                {agingChartData.map((bucket, index) => (
+                {agingChartData.map((bucket) => (
                   <div
                     key={bucket.name}
                     className="flex items-center justify-between p-3 rounded-xl bg-slate-800/30"

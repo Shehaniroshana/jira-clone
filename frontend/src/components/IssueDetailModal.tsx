@@ -1,15 +1,8 @@
 import { useState, useEffect } from "react";
 import {
     X,
-    User,
-    Tag,
-    Clock,
     FileText,
-    MessageSquare,
-    Link as LinkIcon,
-    Activity,
     Maximize2,
-    Calendar,
     CheckCircle2,
     Layout
 } from "lucide-react";

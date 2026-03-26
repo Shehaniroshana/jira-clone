@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, Activity, Users, CheckCircle2, AlertCircle, Clock } from 'lucide-react'
+import { Activity, CheckCircle2, AlertCircle, Clock } from 'lucide-react'
 import { AreaChart, Area, ResponsiveContainer } from 'recharts'
 import { motion } from 'framer-motion'
 import { memo } from 'react'
@@ -23,7 +23,7 @@ const generateSparklineData = (base: number, volatility: number) => {
     }))
 }
 
-const StatCard = memo(({ title, value, label, icon: Icon, color, trend, trendValue, delay }: any) => {
+const StatCard = memo(({ value, label, icon: Icon, color, trend, trendValue, delay }: any) => {
     const data = generateSparklineData(Number(value) || 10, 5)
 
     return (

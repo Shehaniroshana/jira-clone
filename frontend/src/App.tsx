@@ -38,7 +38,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
-function App() {
+function CallClone() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {/* Antigravity particle background */}
@@ -97,4 +97,4 @@ function App() {
 }
 
 
-export default App
+export default CallClone
