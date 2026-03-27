@@ -9,23 +9,23 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', size = 'default', ...props }, ref) => {
-    const baseStyles = "inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:pointer-events-none active:scale-95"
+    const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:pointer-events-none"
     
     const variants = {
-      default: "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5",
-      destructive: "bg-red-600 text-white shadow-lg shadow-red-500/25 hover:bg-red-700 hover:shadow-red-500/40",
-      outline: "border border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white hover:border-slate-600",
-      secondary: "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white",
-      ghost: "text-slate-400 hover:bg-slate-800/50 hover:text-white",
-      link: "text-cyan-400 underline-offset-4 hover:underline hover:text-cyan-300",
-      neon: "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] hover:-translate-y-0.5",
+      default: "bg-primary/15 border border-primary/20 text-white backdrop-blur-md hover:bg-primary/25 hover:border-primary/40 shadow-sm",
+      destructive: "bg-destructive/15 border border-destructive/20 text-white backdrop-blur-md hover:bg-destructive/25 hover:text-white shadow-sm",
+      outline: "border border-slate-700 bg-slate-900/40 text-slate-300 hover:bg-slate-800/80 backdrop-blur-md hover:text-white",
+      secondary: "bg-secondary/40 border border-secondary/50 text-white backdrop-blur-md hover:bg-secondary/60 shadow-sm",
+      ghost: "text-slate-400 hover:bg-slate-800/40 hover:text-white backdrop-blur-sm",
+      link: "text-primary underline-offset-4 hover:underline",
+      neon: "bg-primary/15 border border-primary/20 text-white backdrop-blur-md hover:bg-primary/25 hover:border-primary/40 shadow-sm",
     }
     
     const sizes = {
       default: "h-11 py-2 px-5",
-      sm: "h-9 px-3 text-xs rounded-lg",
-      lg: "h-12 px-8 text-base rounded-2xl",
-      icon: "h-10 w-10 rounded-xl",
+      sm: "h-9 px-3 text-xs rounded-md",
+      lg: "h-12 px-8 text-base rounded-md",
+      icon: "h-10 w-10 rounded-md",
     }
 
     return (

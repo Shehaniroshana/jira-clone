@@ -1,12 +1,14 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { Toaster } from '@/components/ui/toaster'
 import Antigravity from '@/components/ui/Antigravity'
+import { setupService } from '@/services/setupService'
 
 // Pages
 import LoginPage from '@/pages/auth/LoginPage'
 import RegisterPage from '@/pages/auth/RegisterPage'
+import DatabaseSetupPage from '@/pages/setup/DatabaseSetupPage'
 import DashboardPage from '@/pages/DashboardPage'
 import ProjectPage from '@/pages/ProjectPage'
 import BoardPage from '@/pages/BoardPage'
@@ -39,6 +41,31 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function CallClone() {
+  const [isSetupConfigured, setIsSetupConfigured] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const fetchSetupStatus = async () => {
+      try {
+        const status = await setupService.getStatus()
+        setIsSetupConfigured(status.configured)
+      } catch {
+        // Fallback to true if API is unreachable (it might be trying to connect before port is ready)
+        // The real catch will happen inside the API layer if it fails.
+        setIsSetupConfigured(false)
+      }
+    }
+
+    fetchSetupStatus()
+  }, [])
+
+  if (isSetupConfigured === null) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-300">Loading setup...</p>
+      </div>
+    )
+  }
+
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {/* Antigravity particle background */}
@@ -65,9 +92,26 @@ function CallClone() {
         <Routes>
           {/* Auth Routes */}
           <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/login"
+              element={isSetupConfigured ? <LoginPage /> : <Navigate to="/setup" replace />}
+            />
+            <Route
+              path="/register"
+              element={isSetupConfigured ? <RegisterPage /> : <Navigate to="/setup" replace />}
+            />
           </Route>
+
+          <Route
+            path="/setup"
+            element={
+              isSetupConfigured ? (
+                <Navigate to="/login" replace />
+              ) : (
+                <DatabaseSetupPage onConfigured={() => setIsSetupConfigured(true)} />
+              )
+            }
+          />
 
           {/* App Routes */}
           <Route element={
@@ -88,7 +132,7 @@ function CallClone() {
           </Route>
 
           {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to={isSetupConfigured ? '/' : '/setup'} replace />} />
         </Routes>
         <Toaster />
       </div>

@@ -10,6 +10,7 @@ import (
 	"github.com/braviz/jira-clone/internal/middleware"
 	"github.com/braviz/jira-clone/internal/repository"
 	"github.com/braviz/jira-clone/internal/services"
+	"github.com/braviz/jira-clone/internal/setup"
 	"github.com/braviz/jira-clone/internal/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -21,6 +22,17 @@ import (
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
+	store := setup.NewDBConfigStore(cfg.DBConfigPath, cfg.DBKeyPath)
+
+	if cfg.DBURL == "" {
+		databaseURL, err := store.Load()
+		if err != nil && err != setup.ErrNotConfigured {
+			log.Println("Failed to load encrypted database URL, using environment DB settings:", err)
+		}
+		if databaseURL != "" {
+			cfg.DBURL = databaseURL
+		}
+	}
 
 	// Initialize database
 	db, err := database.Connect(cfg)
@@ -77,6 +89,7 @@ func main() {
 	notificationHandler := handlers.NewNotificationHandler(notificationService)
 	reportHandler := handlers.NewReportHandler(db)
 	issueLinkHandler := handlers.NewIssueLinkHandler(issueLinkService)
+	setupHandler := handlers.NewSetupHandler(store, cfg.DBURL != "")
 
 	// Create Fiber app
 	app := fiber.New(fiber.Config{
@@ -105,6 +118,11 @@ func main() {
 
 	// API routes
 	api := app.Group("/api")
+
+	// Setup routes
+	setupRoutes := api.Group("/setup")
+	setupRoutes.Get("/status", setupHandler.GetStatus)
+	setupRoutes.Post("/database-url", setupHandler.SaveDatabaseURL)
 
 	// Auth routes
 	auth := api.Group("/auth")

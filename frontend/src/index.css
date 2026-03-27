@@ -239,21 +239,13 @@
      =================================== */
   
   .btn-neon {
-    @apply relative overflow-hidden px-6 py-3 font-semibold text-white rounded-xl;
-    @apply bg-gradient-to-r from-cyan-500 to-blue-500;
-    @apply transition-all duration-300 ease-out;
-    @apply hover:shadow-[0_0_30px_rgba(6,182,212,0.5)];
-    @apply hover:scale-[1.02] active:scale-[0.98];
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium text-white rounded-md;
+    @apply bg-primary/15 border border-primary/20 backdrop-blur-md shadow-sm;
+    @apply transition-all duration-200;
   }
 
-  .btn-neon::before {
-    content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
-    background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
-  }
-
-  .btn-neon:hover::before {
-    @apply opacity-100;
+  .btn-neon:hover {
+    @apply bg-primary/25 border-primary/40;
   }
 
   .btn-glass {

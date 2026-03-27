@@ -59,7 +59,7 @@ export default function AnalyticsCharts({ stats, weeklyData = [] }: AnalyticsCha
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="glass-card rounded-2xl p-4"
+                className="glass-card rounded-2xl p-4 flex flex-col"
             >
                 <div className="flex items-center justify-between mb-2">
                     <div>
@@ -76,7 +76,7 @@ export default function AnalyticsCharts({ stats, weeklyData = [] }: AnalyticsCha
                     </div>
                 </div>
 
-                <div className="h-[200px] w-full">
+                <div className="flex-1 w-full min-h-[250px]">
                     {weeklyData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={weeklyData} barGap={2} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
@@ -125,14 +125,14 @@ export default function AnalyticsCharts({ stats, weeklyData = [] }: AnalyticsCha
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
-                className="glass-card rounded-2xl p-4"
+                className="glass-card rounded-2xl p-4 flex flex-col"
             >
                 <div className="mb-2">
                     <h3 className="text-sm font-bold text-white">Issue Status</h3>
                     <p className="text-[10px] text-slate-400">Distribution by status</p>
                 </div>
 
-                <div className="h-[200px] w-full flex items-center justify-center relative">
+                <div className="flex-1 min-h-[250px] w-full flex items-center justify-center relative">
                     {pieData.length > 0 ? (
                         <>
                             <ResponsiveContainer width="100%" height="100%">

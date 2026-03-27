@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { Mail, Lock, ArrowRight, Zap, CheckCircle2, Sparkles } from 'lucide-react'
+import { Mail, Lock, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import AuthBackground from '@/components/auth/AuthBackground'
 
 export default function LoginPage() {
@@ -51,11 +51,11 @@ export default function LoginPage() {
           <div className="flex items-center gap-3 mb-12">
             <div className="relative">
               <div className="absolute inset-0 bg-cyan-500 rounded-xl blur-lg opacity-50" />
-              <div className="relative w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                <Zap className="w-8 h-8 text-white" />
+              <div className="relative w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30 overflow-hidden border border-white/10">
+                <img src="/icon.png" alt="REX Logo" className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-gradient">Call Clone</span>
+            <span className="text-3xl font-bold text-gradient">REX</span>
           </div>
 
           <h1 className="text-5xl font-black text-white mb-4 leading-tight">
@@ -107,11 +107,11 @@ export default function LoginPage() {
           <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
             <div className="relative">
               <div className="absolute inset-0 bg-cyan-500 rounded-xl blur-lg opacity-50" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center">
-                <Zap className="w-7 h-7 text-white" />
+              <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center overflow-hidden border border-white/10">
+                <img src="/icon.png" alt="REX Logo" className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-2xl font-bold text-gradient">Call Clone</span>
+            <span className="text-2xl font-bold text-gradient">REX</span>
           </div>
 
           {/* Login Card */}

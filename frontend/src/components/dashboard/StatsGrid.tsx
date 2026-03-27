@@ -35,11 +35,11 @@ const StatCard = memo(({ value, label, icon: Icon, color, trend, trendValue, del
             className="glass-card relative overflow-hidden rounded-2xl p-4 group perspective-1000"
         >
             <div className="relative z-10 flex flex-col h-full justify-between gap-3">
-                <div className="flex items-start justify-between">
-                    <div className={`p-2.5 rounded-xl bg-${color}-500/10 text-${color}-400 group-hover:bg-${color}-500 group-hover:text-white transition-all duration-500 shadow-lg shadow-${color}-500/10 ring-1 ring-${color}-500/20`}>
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
+                    <div className={`p-2.5 rounded-xl bg-${color}-500/10 text-${color}-400 group-hover:bg-${color}-500 group-hover:text-white transition-all duration-500 shadow-lg shadow-${color}-500/10 ring-1 ring-${color}-500/20 w-max`}>
                         <Icon className="w-5 h-5" />
                     </div>
-                    <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-md`}>
+                    <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-md self-start sm:self-auto`}>
                         <span className={trend === 'up' ? 'text-emerald-400' : 'text-rose-400'}>
                             {trend === 'up' ? '+' : ''}{trendValue}
                         </span>

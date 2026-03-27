@@ -1,8 +1,8 @@
 {
-  "name": "call-clone",
+  "name": "rex",
   "private": true,
   "version": "1.0.0",
-  "description": "Call Clone desktop project management app",
+  "description": "REX desktop project management app",
   "author": {
     "name": "Shehan Iroshana",
     "email": "shehan@example.com"
@@ -14,8 +14,8 @@
   "scripts": {
     "backend:dev": "cd backend && DB_DRIVER=sqlite DB_PATH=./jira-clone.db ALLOWED_ORIGINS=http://localhost:5173 PORT=8080 go run ./cmd/api/main.go",
     "backend:build:linux": "cd backend && mkdir -p ../electron/bin && CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o ../electron/bin/jira-backend ./cmd/api/main.go",
-    "dev": "npm run dev --workspace frontend",
-    "desktop:dev": "concurrently -k \"npm run backend:dev\" \"npm run dev\" \"wait-on tcp:5173 tcp:8080 && ELECTRON_START_URL=http://localhost:5173 electron --no-sandbox electron/main.cjs\"",
+    "web:dev": "npm run dev --workspace frontend",
+    "dev": "concurrently -k \"npm run backend:dev\" \"npm run web:dev\" \"wait-on tcp:5173 tcp:8080 && ELECTRON_START_URL=http://localhost:5173 electron --no-sandbox electron/main.cjs\"",
     "desktop:start": "npm run build && electron --no-sandbox electron/main.cjs",
     "desktop:package:deb": "npm run build && npm run backend:build:linux && electron-builder --linux deb",
     "desktop:package:appimage": "npm run build && npm run backend:build:linux && electron-builder --linux AppImage",
@@ -29,14 +29,15 @@
     "wait-on": "^8.0.5"
   },
   "build": {
-    "appId": "com.callclone.desktop",
-    "productName": "Call Clone",
+    "appId": "com.rex.desktop",
+    "productName": "REX",
     "directories": {
       "output": "release"
     },
     "files": [
       "frontend/dist/**/*",
       "electron/main.cjs",
+      "electron/preload.cjs",
       "package.json"
     ],
     "extraResources": [
@@ -49,8 +50,8 @@
       "target": [
         "deb"
       ],
-      "executableName": "call-clone",
-      "icon": "logo.png",
+      "executableName": "rex",
+      "icon": "icon.png",
       "maintainer": "Shehan Iroshana <shehan@example.com>",
       "category": "Development"
     }

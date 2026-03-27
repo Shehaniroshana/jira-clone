@@ -118,7 +118,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in p-2 pb-20 max-w-[1600px] mx-auto">
+    <>
+      <div className="space-y-6 animate-fade-in p-2 pb-20 max-w-[1600px] mx-auto">
       {/* Hero Section - made slightly more compact */}
       <div className="relative overflow-hidden rounded-[2rem] glass-card p-8 text-white group shadow-2xl shadow-black/20">
         {/* Animated mesh gradient background */}
@@ -126,7 +127,7 @@ export default function DashboardPage() {
         <div className="absolute inset-0 grid-pattern opacity-30" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-4">
+          <div className="space-y-4 w-full md:w-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 glass-panel rounded-full text-xs text-slate-300 backdrop-blur-md border border-white/10 shadow-lg">
               <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
               <Calendar className="w-3 h-3 mr-1 text-cyan-400" />
@@ -135,14 +136,14 @@ export default function DashboardPage() {
 
             <div>
               <p className="text-slate-300 text-lg mb-1 font-medium tracking-wide">{getGreeting()},</p>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter drop-shadow-2xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter drop-shadow-2xl flex flex-wrap gap-x-3">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-white animate-gradient-x">{user?.firstName}</span>
-                <span className="text-slate-400 ml-3 font-bold">{user?.lastName}</span>
+                <span className="text-slate-400 font-bold">{user?.lastName}</span>
               </h1>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
+              <div className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur flex items-center gap-2">
                 <div className="p-1.5 rounded bg-cyan-500/20 text-cyan-400">
                   <Target className="w-4 h-4" />
                 </div>
@@ -151,7 +152,7 @@ export default function DashboardPage() {
                   <p className="text-lg font-bold text-white leading-none">{stats.myTasks}</p>
                 </div>
               </div>
-              <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur flex items-center gap-2">
+              <div className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur flex items-center gap-2">
                 <div className="p-1.5 rounded bg-purple-500/20 text-purple-400">
                   <Clock className="w-4 h-4" />
                 </div>
@@ -165,7 +166,7 @@ export default function DashboardPage() {
 
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="btn-neon h-14 px-8 text-base font-bold shadow-2xl shadow-cyan-500/30 border border-white/20"
+            className="btn-neon h-14 px-8 text-base font-bold shadow-2xl shadow-cyan-500/30 border border-white/20 w-full md:w-auto mt-4 md:mt-0"
             size="lg"
           >
             <Sparkles className="w-5 h-5 mr-3 animate-pulse" />
@@ -322,15 +323,16 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+    </div>
 
       {/* Create Project Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="glass-card w-full max-w-lg rounded-3xl animate-scale-in border border-white/10 shadow-2xl shadow-cyan-500/20">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="glass-card bg-blue-950/30 border border-white/10 w-full max-w-lg rounded-3xl animate-scale-in shadow-2xl shadow-primary/10">
             <div className="p-8">
               <div className="flex items-center gap-5 mb-8">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 ring-2 ring-white/10">
-                  <FolderKanban className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-lg shadow-primary/30 ring-2 ring-primary/10">
+                  <FolderKanban className="w-7 h-7 text-primary" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-white">Create New Project</h2>
@@ -347,7 +349,7 @@ export default function DashboardPage() {
                     onChange={(e) => setFormData({ ...formData, key: e.target.value.toUpperCase() })}
                     maxLength={10}
                     required
-                    className="font-mono uppercase bg-slate-900/50 border-slate-700 text-white focus:border-cyan-500 h-12 text-lg tracking-wider"
+                    className="font-mono uppercase bg-slate-900/50 border-slate-700 text-white focus:border-primary h-12 text-lg tracking-wider"
                   />
                   <p className="text-xs text-slate-500 ml-1">
                     Unique identifier used in issue keys (max 10 chars)
@@ -361,7 +363,7 @@ export default function DashboardPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="bg-slate-900/50 border-slate-700 text-white focus:border-cyan-500 h-12"
+                    className="bg-slate-900/50 border-slate-700 text-white focus:border-primary h-12"
                   />
                 </div>
 
@@ -371,7 +373,7 @@ export default function DashboardPage() {
                     placeholder="What is this project about?"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="bg-slate-900/50 border-slate-700 text-white focus:border-cyan-500 h-12"
+                    className="bg-slate-900/50 border-slate-700 text-white focus:border-primary h-12"
                   />
                 </div>
 
@@ -399,20 +401,21 @@ export default function DashboardPage() {
                 <div className="flex gap-4 pt-6">
                   <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 btn-glass h-12"
+                    className="flex-1 h-12"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" className="flex-1 btn-neon h-12 text-base shadow-lg shadow-cyan-500/20" disabled={isLoading}>
+                  <Button type="submit" variant="neon" className="flex-1 h-12 text-base shadow-lg shadow-primary/20" disabled={isLoading}>
                     {isLoading ? 'Creating...' : 'Create Project'}
                   </Button>
                 </div>
               </form>
             </div>
           </div>
-        </div>
+          </div>
       )}
-    </div>
+    </>
   )
 }

@@ -53,12 +53,12 @@ export default function AppLayout() {
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <div className="absolute inset-0 bg-cyan-500 rounded-xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
-              <div className="relative w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="relative w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300 overflow-hidden">
+                <img src="/icon.png" alt="REX Logo" className="w-full h-full object-cover" />
               </div>
             </div>
             <span className="text-xl font-bold text-gradient tracking-tight">
-              Call Clone
+              REX
             </span>
           </Link>
         </div>
@@ -224,8 +224,8 @@ export default function AppLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-64 min-h-screen">
-        <div className="container mx-auto p-8 max-w-7xl animate-fade-in">
+      <main className="flex-1 ml-64 min-h-screen relative w-[calc(100%-16rem)] overflow-x-hidden">
+        <div className="w-full p-4 md:p-8 animate-fade-in">
           <div className="mb-8 flex items-center justify-between">
 
           </div>

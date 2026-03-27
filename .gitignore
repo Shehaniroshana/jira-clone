@@ -40,6 +40,8 @@ backend/uploads/*
 # Database
 *.db
 *.sqlite
+.secure/
+backend/.secure/
 
 # Logs
 logs/

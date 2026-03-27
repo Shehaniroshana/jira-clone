@@ -16,9 +16,14 @@ class WebSocketService {
     private ws: WebSocket | null = null
     private reconnectAttempts = 0
     private readonly MAX_RECONNECT_ATTEMPTS = 5
-    private readonly WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
+    private WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
     private eventListeners: Map<string, Set<(data: any) => void>> = new Map()
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null
+
+    // Support dynamic override from Electron preload
+    setWsUrl(url: string) {
+        this.WS_URL = url
+    }
 
     constructor() {
         // Don't auto-connect in constructor
@@ -93,7 +98,13 @@ class WebSocketService {
         }
 
         if (this.ws) {
-            this.ws.close()
+            const socket = this.ws
+            if (socket.readyState === WebSocket.CONNECTING) {
+                socket.onopen = () => socket.close()
+                socket.onerror = () => {} 
+            } else {
+                socket.close()
+            }
             this.ws = null
         }
     }

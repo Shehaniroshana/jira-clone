@@ -4,8 +4,12 @@ import CallClone from './App.tsx'
 import './index.css'
 import './i18n'
 
+import { DynamicPortWrapper } from './components/DynamicPortWrapper'
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <CallClone />
+    <DynamicPortWrapper>
+      <CallClone />
+    </DynamicPortWrapper>
   </React.StrictMode>,
 )

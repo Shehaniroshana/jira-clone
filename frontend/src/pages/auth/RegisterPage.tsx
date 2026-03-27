@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { Mail, Lock, User, ArrowRight, Zap, Sparkles, Shield, Users, Rocket } from 'lucide-react'
+import { Mail, Lock, User, ArrowRight, Sparkles, Shield, Users, Rocket } from 'lucide-react'
 import AuthBackground from '@/components/auth/AuthBackground'
 
 export default function RegisterPage() {
@@ -47,7 +47,7 @@ export default function RegisterPage() {
       })
       toast({
         title: "Account created! 🎉",
-        description: "Welcome to Call Clone! Let's get started.",
+        description: "Welcome to REX! Let's get started.",
       })
       navigate('/')
     } catch (error: any) {
@@ -76,11 +76,11 @@ export default function RegisterPage() {
           <div className="flex items-center gap-3 mb-12">
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500 rounded-xl blur-lg opacity-50" />
-              <div className="relative w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-                <Zap className="w-8 h-8 text-white" />
+              <div className="relative w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 overflow-hidden border border-white/10">
+                <img src="/icon.png" alt="REX Logo" className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-gradient">Call Clone</span>
+            <span className="text-3xl font-bold text-gradient">REX</span>
           </div>
 
           <h1 className="text-5xl font-black text-white mb-4 leading-tight">
@@ -88,7 +88,7 @@ export default function RegisterPage() {
             <span className="text-gradient-animate">productivity journey</span>
           </h1>
           <p className="text-xl text-slate-400 mb-12 max-w-lg leading-relaxed">
-            Join thousands of teams who use Call Clone to ship better products faster.
+            Join thousands of teams who use REX to ship better products faster.
           </p>
 
           {/* Benefits */}
@@ -124,11 +124,11 @@ export default function RegisterPage() {
           <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500 rounded-xl blur-lg opacity-50" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center">
-                <Zap className="w-7 h-7 text-white" />
+              <div className="relative w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center overflow-hidden border border-white/10">
+                <img src="/icon.png" alt="REX Logo" className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-2xl font-bold text-gradient">Call Clone</span>
+            <span className="text-2xl font-bold text-gradient">REX</span>
           </div>
 
           {/* Register Card */}
@@ -233,7 +233,7 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all group"
+                className="w-full h-12 text-base font-semibold btn-neon transition-all group"
                 disabled={isLoading}
               >
                 {isLoading ? (

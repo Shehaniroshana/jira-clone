@@ -921,7 +921,7 @@ export default function AdminPage() {
                             <Input placeholder="Project Key" value={newProject.key} onChange={e => setNewProject({ ...newProject, key: e.target.value })} className="bg-slate-800 border-slate-700" />
                             <Input placeholder="Description" value={newProject.description} onChange={e => setNewProject({ ...newProject, description: e.target.value })} className="bg-slate-800 border-slate-700" />
                             <div className="flex gap-2 pt-2">
-                                <Button className="flex-1 btn-neon" onClick={handleCreateProject}>Create</Button>
+                                <Button variant="neon" className="flex-1" onClick={handleCreateProject}>Create</Button>
                                 <Button variant="outline" className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800" onClick={() => setShowCreateProjectModal(false)}>Cancel</Button>
                             </div>
                         </div>
